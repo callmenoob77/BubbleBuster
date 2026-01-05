@@ -1,3 +1,5 @@
+#This is the py file for mainly backend stuff, like checking the groups and stuff like that
+
 import random
 
 #Phase 1
