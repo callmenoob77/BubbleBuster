@@ -1,4 +1,6 @@
 import random
+
+#Phase 1
 def get_neighbors(row, col, row_max, col_max):
     neighbors = []
 
@@ -54,6 +56,8 @@ def get_connected_bubbles(grid, start_row, start_col):
                     to_visit.append((nbrs_r, nbrs_c))
     return bubbles
 
+#Phase 3
+
 
 def pop_bubbles(grid, bubbles):
     if len(bubbles) >= 3:
@@ -61,6 +65,5 @@ def pop_bubbles(grid, bubbles):
             grid[r][c] = 0
         return True
     return False
-
 
 #def apply_gravity()
