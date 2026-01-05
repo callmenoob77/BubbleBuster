@@ -1,12 +1,12 @@
-# 🫧 BubbleBuster
+# BubbleBuster
 
 A bubble shooter game built with Python and Pygame.
 
-## 🎮 Game Overview
+## Game Overview
 
 BubbleBuster is a classic bubble popper game where players try to pop bubbles by matching 3 or more of the same color.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Python 3.x
@@ -28,4 +28,5 @@ pip install pygame
 3. Run the game
 ```bash
 python main.py
+
 ```
