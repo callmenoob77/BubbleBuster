@@ -1,6 +1,6 @@
 # BubbleBuster
 
-A bubble shooter game built with Python and Pygame.
+A bubble popper game built with Python and Pygame.
 
 ## Game Overview
 
