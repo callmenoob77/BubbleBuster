@@ -1,23 +1,28 @@
-#This is the py file for settings regarding the game (like the dimensions of the window and tings in that regard)
+#This is the py file for settings regarding the game
 
 import pygame
-COLLUMS_NR = 10
-ROWS_NR = 12
 
+#window settings
 WIDTH = 1000
 HEIGHT = 800
 
-MARGIN_WIDTH = 100
-MARGIN_HEIGHT = 100
-
-diam = (HEIGHT - MARGIN_HEIGHT) / ROWS_NR
+#bubble size (used for drawing and hit detection)
+MAX_ROWS = 12
+MAX_COLS = 10
+diam = (HEIGHT - 100) / MAX_ROWS
 radius = int(diam / 2)
 
-start_x = (WIDTH - COLLUMS_NR * diam) / 2
-start_y = (HEIGHT - ROWS_NR * diam) / 2
+#starting position (used as fallback)
+start_x = (WIDTH - MAX_COLS * diam) / 2
+start_y = (HEIGHT - MAX_ROWS * diam) / 2
 
+#game window setup
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Bubble Buster")
-
-#BG = pygame.transform.scale(pygame.image.load("bkgr.jpg"), (WIDTH, HEIGHT))
 BG = pygame.image.load("bkgr.jpg")
+
+#level settings (used in logic.py)
+MAX_LEVEL = 20
+BASE_ROWS = 5
+BASE_COLS = 6
+MAX_COLORS = 7

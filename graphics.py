@@ -4,6 +4,7 @@ import pygame
 import math
 from settings import *
 
+#converts grid position to pixel position for drawing
 def get_pixel_coordinates(row, col, grid=None):
     if grid is not None:
         num_rows = len(grid)
@@ -23,6 +24,7 @@ def get_pixel_coordinates(row, col, grid=None):
     return int(x + radius), int(y + radius)
 
 
+#checks what bubble the mouse is over
 def get_mouse_coordinates(mouse_pos, grid):
     mx, my = mouse_pos
 
@@ -36,6 +38,7 @@ def get_mouse_coordinates(mouse_pos, grid):
     return None
 
 
+#draws all the bubbles on the screen
 def draw_window(grid, hovered_bubble = None, bubbles_to_hide=[]):
     WIN.blit(BG, (0, 0))
     colors = [
@@ -55,16 +58,27 @@ def draw_window(grid, hovered_bubble = None, bubbles_to_hide=[]):
 
             if (r, c) in bubbles_to_hide:
                 continue
+            
+            if value == 0:
+                continue
 
-            color = colors[value]
             pos_row, pos_col = get_pixel_coordinates(r, c, grid)
-
-            pygame.draw.circle(WIN, color, (pos_row, pos_col), radius - 2)
+            
+            if value == 8:
+                pygame.draw.circle(WIN, "gray", (pos_row, pos_col), radius - 2)
+                pygame.draw.circle(WIN, "darkgray", (pos_row, pos_col), radius - 2, 3)
+            elif 9 <= value <= 15:
+                color = colors[value - 8]
+                pygame.draw.circle(WIN, color, (pos_row, pos_col), radius - 2)
+                pygame.draw.circle(WIN, "white", (pos_row, pos_col), radius // 3)
+            else:
+                pygame.draw.circle(WIN, colors[value], (pos_row, pos_col), radius - 2)
 
             if hovered_bubble == (r, c):
                 pygame.draw.circle(WIN, "white", (pos_row, pos_col), radius, 3)
 
 
+#shrinking animation when bubbles get popped
 def pop_animation(grid, group, game_state=None):
     clock = pygame.time.Clock()
     colors = [
@@ -92,7 +106,12 @@ def pop_animation(grid, group, game_state=None):
 
         for r, c in group:
             value = grid[r][c]
-            color = colors[value]
+            if value == 8:
+                color = "gray"
+            elif 9 <= value <= 15:
+                color = colors[value - 8]
+            else:
+                color = colors[value]
             x, y = get_pixel_coordinates(r, c, grid)
 
             pygame.draw.circle(WIN, color, (x, y), current_radius)
@@ -101,6 +120,7 @@ def pop_animation(grid, group, game_state=None):
         pygame.display.update()
 
 
+#falling animation when bubbles get detached from ceiling
 def falling_animation(grid, floating_bubbles, game_state=None):
     clock = pygame.time.Clock()
     colors = [
@@ -117,7 +137,13 @@ def falling_animation(grid, floating_bubbles, game_state=None):
     bubbles_data = []
     for r, c in floating_bubbles:
         x, y = get_pixel_coordinates(r, c, grid)
-        color = colors[grid[r][c]]
+        value = grid[r][c]
+        if value == 8:
+            color = "gray"
+        elif 9 <= value <= 15:
+            color = colors[value - 8]
+        else:
+            color = colors[value]
         bubbles_data.append((x, y, color))
     
     frames = 30
@@ -141,6 +167,7 @@ def falling_animation(grid, floating_bubbles, game_state=None):
 
 #Phase 4
 
+#draws score, level, and power-ups on screen
 def draw_ui(game_state):
     pygame.font.init()
     font = pygame.font.SysFont("Arial", 28)
@@ -157,8 +184,51 @@ def draw_ui(game_state):
     
     hint_text = font_small.render("Press ENTER for next level  |  ESC for menu", True, "orange")
     WIN.blit(hint_text, (WIDTH//2 - hint_text.get_width()//2, HEIGHT - 40))
+    
+    if game_state.color_powers > 0:
+        power_text = font.render(f"COLOR x{game_state.color_powers} [C]", True, "cyan")
+        WIN.blit(power_text, (20, 90))
+    
+    if game_state.color_mode and not game_state.selected_bubble:
+        mode_text = font.render("COLOR MODE - Click a bubble to change!", True, "yellow")
+        WIN.blit(mode_text, (WIDTH//2 - mode_text.get_width()//2, 60))
 
 
+#Phase 5
+
+#draws the color picker panel when changing a bubble's color
+def draw_color_picker(num_colors, selected_pos):
+    pygame.font.init()
+    font = pygame.font.SysFont("Arial", 18)
+    
+    colors = ["red", "blue", "green", "yellow", "purple", "cyan", "orange"]
+    
+    panel_width = 80
+    panel_height = num_colors * 40 + 45
+    panel_x = WIDTH - panel_width - 15
+    panel_y = (HEIGHT - panel_height) // 2
+    
+    panel_rect = pygame.Rect(panel_x, panel_y, panel_width, panel_height)
+    pygame.draw.rect(WIN, (40, 40, 40), panel_rect, border_radius=10)
+    pygame.draw.rect(WIN, "cyan", panel_rect, 3, border_radius=10)
+    
+    title = font.render("PICK", True, "cyan")
+    WIN.blit(title, (panel_x + panel_width//2 - title.get_width()//2, panel_y + 8))
+    
+    buttons = []
+    for i in range(num_colors):
+        color_idx = i + 1
+        btn_rect = pygame.Rect(panel_x + 15, panel_y + 35 + i * 40, 50, 30)
+        
+        pygame.draw.rect(WIN, colors[i], btn_rect, border_radius=5)
+        pygame.draw.rect(WIN, "white", btn_rect, 2, border_radius=5)
+        
+        buttons.append((btn_rect, color_idx))
+    
+    return buttons
+
+
+#shows level complete overlay
 def draw_level_complete(game_state):
     pygame.font.init()
     font_big = pygame.font.SysFont("Arial", 48)
@@ -184,6 +254,7 @@ def draw_level_complete(game_state):
     pygame.display.update()
 
 
+#shows game complete screen when you beat all levels
 def draw_game_complete(game_state):
     pygame.font.init()
     font_big = pygame.font.SysFont("Arial", 48)
@@ -209,6 +280,8 @@ def draw_game_complete(game_state):
     
     pygame.display.update()
 
+
+#draws the main menu with start button
 def draw_menu(high_score):
     pygame.font.init()
     font_title = pygame.font.SysFont("Arial", 64)
@@ -235,7 +308,7 @@ def draw_menu(high_score):
     WIN.blit(btn_text, (button_rect.centerx - btn_text.get_width()//2, 
                        button_rect.centery - btn_text.get_height()//2))
     
-    instructions = font_small.render("Press ENTER during game to skip to next level", True, "white")
+    instructions = font_small.render("Press ENTER to skip to the next level", True, "white")
     WIN.blit(instructions, (WIDTH//2 - instructions.get_width()//2, 500))
     
     esc_text = font_small.render("Press ESC to return to menu", True, "gray")
