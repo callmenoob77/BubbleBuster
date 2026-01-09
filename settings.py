@@ -1,10 +1,27 @@
 #This is the py file for settings regarding the game
 
 import pygame
+import json
+import os
 
-#window settings
-WIDTH = 1000
-HEIGHT = 800
+#load saved settings for window size
+def get_large_window_setting():
+    if os.path.exists("save_data.json"):
+        try:
+            with open("save_data.json", "r") as f:
+                data = json.load(f)
+                return data.get("settings", {}).get("large_window", False)
+        except:
+            return False
+    return False
+
+#window settings - larger if setting is on
+if get_large_window_setting():
+    WIDTH = 1200
+    HEIGHT = 900
+else:
+    WIDTH = 1000
+    HEIGHT = 800
 
 #bubble size (used for drawing and hit detection)
 MAX_ROWS = 12
