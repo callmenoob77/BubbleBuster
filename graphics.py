@@ -202,7 +202,7 @@ def falling_animation(grid, floating_bubbles, run_total, game_state=None):
         pygame.display.update()
 
 
-#=== UI Drawing ===#
+#UI Drawing
 
 def draw_ui(game_state, run_total):
     """
@@ -276,30 +276,6 @@ def draw_color_picker(num_colors, selected_pos):
     
     return buttons
 
-
-def draw_level_complete(game_state):
-    """
-    Show level complete overlay.
-    
-    Args:
-        game_state: For showing score
-    """
-    WIN.blit(OVERLAY_DARK, (0, 0))
-    
-    txt = FONT_BIG.render("Level Complete!", True, "green")
-    WIN.blit(txt, (WIDTH//2 - txt.get_width()//2, HEIGHT//2 - 80))
-    
-    txt = FONT_TINY.render(f"Score: {game_state.score}", True, "white")
-    WIN.blit(txt, (WIDTH//2 - txt.get_width()//2, HEIGHT//2))
-    
-    if game_state.score >= game_state.high_score:
-        txt = FONT_TINY.render("NEW HIGH SCORE!", True, "gold")
-        WIN.blit(txt, (WIDTH//2 - txt.get_width()//2, HEIGHT//2 + 40))
-    
-    txt = FONT_TINY.render("Click to continue...", True, "yellow")
-    WIN.blit(txt, (WIDTH//2 - txt.get_width()//2, HEIGHT//2 + 90))
-    
-    pygame.display.update()
 
 
 def draw_game_complete(run_total):
